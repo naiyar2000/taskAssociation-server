@@ -16,10 +16,10 @@ import lombok.ToString;
 public class Task {
    
 	@Id
-	private int taskId;
-//	private int taskTypeId;
+	private String taskId;
 	private String taskAssignedBy;
 	private String taskTitle;
 	private String taskDescription;
+	private int likeCount;
 	
 }
