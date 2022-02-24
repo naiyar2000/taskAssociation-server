@@ -3,9 +3,17 @@ package com.example.demo.controller;
 import com.example.demo.config.JwtTokenUtil;
 import com.example.demo.dto.JwtRequest;
 import com.example.demo.dto.JwtResponse;
+import com.example.demo.dto.TaskRequest;
+import com.example.demo.dto.TaskResponse;
+import com.example.demo.entity.TaskType;
 import com.example.demo.entity.UserDao;
 import com.example.demo.entity.UserDto;
+import com.example.demo.repository.TaskRepository;
+import com.example.demo.repository.TaskTypeRepository;
 import com.example.demo.service.*;
+
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,6 +35,25 @@ public class JwtAuthenticationController {
 
 	@Autowired
 	private JwtUserDetailsService userDetailsService;
+	
+	@Autowired
+	private TaskTypeRepository taskTypeRepository;
+	@Autowired
+	private TaskRepository taskRepository;
+	
+	@PostMapping("/addTask")
+	public TaskType saveTaskType(@RequestBody TaskRequest taskRequest) {
+		return taskTypeRepository.save(taskRequest.getTaskType()     );
+	}
+	@GetMapping("/findTaskTypes")
+	public List<TaskType> findTaskTypes(){
+		return taskTypeRepository.findAll();
+	}
+	
+	@RequestMapping(value = "/getTaskInfo", method = RequestMethod.GET)
+	public List<TaskResponse> getJoinInformation(){
+		return taskTypeRepository.getJoinInformation();
+	}
 
 	@RequestMapping(value = "/authenticate", method = RequestMethod.POST)
 	public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) throws Exception {
@@ -42,7 +69,15 @@ public class JwtAuthenticationController {
 
 	@RequestMapping(value = "/register", method = RequestMethod.POST)
 	public ResponseEntity<?> saveUser(@RequestBody UserDto user) throws Exception {
-		return ResponseEntity.ok(userDetailsService.save(user));
+		 ResponseEntity.ok(userDetailsService.save(user));
+			authenticate(user.getUsername(), user.getPassword());
+
+			final UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUsername());
+
+			final String token = jwtTokenUtil.generateToken(userDetails);
+
+			return ResponseEntity.ok(new JwtResponse(token));
+
 	}
 
 	private void authenticate(String username, String password) throws Exception {
