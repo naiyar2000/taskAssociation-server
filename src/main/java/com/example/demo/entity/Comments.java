@@ -1,6 +1,9 @@
 package com.example.demo.entity;
 
+import java.sql.Timestamp;
+
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 import lombok.AllArgsConstructor;
@@ -12,14 +15,19 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-@Entity
-public class Task {
-   
+@Entity(name="Comments")
+public class Comments {
 	@Id
+	@GeneratedValue
+	private int id;
+	
 	private String taskId;
-	private String taskAssignedBy;
-	private String taskTitle;
-	private String taskDescription;
+	private String commentId;
+	private String userId;
+	private String comment;
+	private Timestamp timeStamp;
 	private int likeCount;
 	
+	
+
 }
