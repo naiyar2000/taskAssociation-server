@@ -12,6 +12,10 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 public class TaskRequest {
+	public TaskType taskType;
 
-	private TaskType taskType;
+	public TaskType getTaskType() {
+		// TODO Auto-generated method stub
+		return this.taskType;
+	}
 }
