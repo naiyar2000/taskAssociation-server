@@ -22,7 +22,7 @@ public class Comments {
 	private int id;
 	
 	private String taskId;
-	private String commentId;
+//	private String commentId;
 	private String userId;
 	private String comment;
 	private Timestamp timeStamp;

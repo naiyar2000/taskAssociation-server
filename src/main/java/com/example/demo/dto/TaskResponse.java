@@ -12,7 +12,8 @@ import java.lang.*;
 @NoArgsConstructor
 @ToString
 public class TaskResponse {
-
+	
+	private String taskId;
 	private String taskAssignedBy;
 	private String taskTitle;
 	private String taskDescription;

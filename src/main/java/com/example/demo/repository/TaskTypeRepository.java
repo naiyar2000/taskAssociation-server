@@ -10,6 +10,6 @@ import com.example.demo.entity.TaskType;
 
 public interface TaskTypeRepository extends JpaRepository<TaskType, Integer>{
 
-	@Query("SELECT new com.example.demo.dto.TaskResponse (t.taskAssignedBy, t.taskTitle, t.taskDescription, tt.taskTypeName) FROM TaskType tt JOIN tt.tasks t")
+	@Query("SELECT new com.example.demo.dto.TaskResponse (t.taskId, t.taskAssignedBy, t.taskTitle, t.taskDescription, tt.taskTypeName) FROM TaskType tt JOIN tt.tasks t")
 	public List<TaskResponse> getJoinInformation();
 }
