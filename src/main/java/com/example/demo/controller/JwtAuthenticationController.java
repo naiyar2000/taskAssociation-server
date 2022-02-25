@@ -35,25 +35,6 @@ public class JwtAuthenticationController {
 
 	@Autowired
 	private JwtUserDetailsService userDetailsService;
-	
-	@Autowired
-	private TaskTypeRepository taskTypeRepository;
-	@Autowired
-	private TaskRepository taskRepository;
-	
-	@PostMapping("/addTask")
-	public TaskType saveTaskType(@RequestBody TaskRequest taskRequest) {
-		return taskTypeRepository.save(taskRequest.getTaskType()     );
-	}
-	@GetMapping("/findTaskTypes")
-	public List<TaskType> findTaskTypes(){
-		return taskTypeRepository.findAll();
-	}
-	
-	@RequestMapping(value = "/getTaskInfo", method = RequestMethod.GET)
-	public List<TaskResponse> getJoinInformation(){
-		return taskTypeRepository.getJoinInformation();
-	}
 
 	@RequestMapping(value = "/authenticate", method = RequestMethod.POST)
 	public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) throws Exception {
