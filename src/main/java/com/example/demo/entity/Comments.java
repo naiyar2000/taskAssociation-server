@@ -23,7 +23,8 @@ public class Comments {
 	
 	private String taskId;
 //	private String commentId;
-	private String userId;
+	private String userName;
+	private String userEmail;
 	private String comment;
 	private Timestamp timeStamp;
 	private int likeCount;

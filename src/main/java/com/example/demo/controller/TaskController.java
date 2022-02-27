@@ -26,7 +26,7 @@ public class TaskController {
 	
 	@PostMapping("/addTask")
 	public TaskType saveTaskType(@RequestBody TaskRequest taskRequest) {
-		return taskTypeRepository.save(taskRequest.getTaskType()     );
+		return taskTypeRepository.save(taskRequest.getTaskType());
 	}
 	@GetMapping("/findTaskTypes")
 	public List<TaskType> findTaskTypes(){

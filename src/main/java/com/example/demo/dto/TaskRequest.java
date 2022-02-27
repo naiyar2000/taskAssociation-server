@@ -15,7 +15,6 @@ public class TaskRequest {
 	public TaskType taskType;
 
 	public TaskType getTaskType() {
-		// TODO Auto-generated method stub
 		return this.taskType;
 	}
 }
