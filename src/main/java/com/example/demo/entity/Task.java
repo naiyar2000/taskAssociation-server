@@ -1,7 +1,15 @@
 package com.example.demo.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,7 +23,27 @@ import lombok.ToString;
 @ToString
 @Entity
 public class Task {
-   
+	
+	@Id
+	@Column(name = "task_id")
+	private String taskId;
+	private String taskAssignedBy;
+	private String taskTitle;
+	private String taskDescription;
+	private int likeCount;
+
+	@OneToMany(targetEntity = UserLike.class,cascade = CascadeType.ALL)
+	@JoinColumn( name = "hahaha", referencedColumnName = "task_id")
+	List<UserLike> userLike = new ArrayList<UserLike>();
+
+	public List<UserLike> getUserLike() {
+		return userLike;
+	}
+	public void setUserLike(List<UserLike> userLike) {
+		this.userLike = userLike;
+	}
+
+
 	public String getTaskId() {
 		return taskId;
 	}
@@ -53,11 +81,5 @@ public class Task {
 		this.taskDescription = taskDescription;
 		this.likeCount = likeCount;
 	}
-	@Id
-	private String taskId;
-	private String taskAssignedBy;
-	private String taskTitle;
-	private String taskDescription;
-	private int likeCount;
 	
 }
