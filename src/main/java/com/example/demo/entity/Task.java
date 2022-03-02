@@ -33,7 +33,7 @@ public class Task {
 	private int likeCount;
 
 	@OneToMany(targetEntity = UserLike.class,cascade = CascadeType.ALL)
-	@JoinColumn( name = "hahaha", referencedColumnName = "task_id")
+	@JoinColumn(name = "hahaha", referencedColumnName = "task_id")
 	List<UserLike> userLike = new ArrayList<UserLike>();
 
 	public List<UserLike> getUserLike() {
