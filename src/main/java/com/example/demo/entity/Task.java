@@ -4,36 +4,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 
-
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@ToString
 @Entity
 public class Task {
 	
 	@Id
-	@Column(name = "task_id")
 	private String taskId;
 	private String taskAssignedBy;
 	private String taskTitle;
 	private String taskDescription;
 	private int likeCount;
 
-	@OneToMany(targetEntity = UserLike.class,cascade = CascadeType.ALL)
-	@JoinColumn(name = "hahaha", referencedColumnName = "task_id")
+	@OneToMany(mappedBy = "task", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
+	@JsonIgnoreProperties("task")
 	List<UserLike> userLike = new ArrayList<UserLike>();
 
 	public List<UserLike> getUserLike() {
@@ -71,8 +60,21 @@ public class Task {
 	public int getLikeCount() {
 		return likeCount;
 	}
+	
+	public Task() {
+		super();
+	}
 	public void setLikeCount(int likeCount) {
 		this.likeCount = likeCount;
+	}
+	public Task(String taskId, String taskAssignedBy, String taskTitle, String taskDescription, int likeCount,
+			List<UserLike> userLike) {
+		this.taskId = taskId;
+		this.taskAssignedBy = taskAssignedBy;
+		this.taskTitle = taskTitle;
+		this.taskDescription = taskDescription;
+		this.likeCount = likeCount;
+		this.userLike = userLike;
 	}
 	public Task(String taskId, String taskAssignedBy, String taskTitle, String taskDescription, int likeCount) {
 		this.taskId = taskId;
@@ -80,6 +82,20 @@ public class Task {
 		this.taskTitle = taskTitle;
 		this.taskDescription = taskDescription;
 		this.likeCount = likeCount;
+	}
+
+	public void add (UserLike tempUserLike) {
+		if(userLike==null) {
+			userLike = new ArrayList<>();
+		}
+
+		userLike.add(tempUserLike);
+	
+		tempUserLike.setTask(this);
+	}
+
+	public void updateTaskLikeCount() {
+		this.likeCount++;
 	}
 	
 }
