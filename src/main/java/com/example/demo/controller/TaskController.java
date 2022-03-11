@@ -86,9 +86,8 @@ public class TaskController {
 
 		taskRepository.save(tt);
 
-		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(userLike.getUserEmail()).toUri();
 
-		return ResponseEntity.created(location).body(userLike);
+		return ResponseEntity.ok(userLike);
 		// return userLikeRepository.save(likeRequest);
 	}
 	
