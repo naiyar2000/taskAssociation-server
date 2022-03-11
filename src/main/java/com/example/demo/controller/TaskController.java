@@ -45,7 +45,6 @@ public class TaskController {
 	public List<Task> findTask(){
 		// return taskTypeRepository.findAll();
 		return taskRepository.findAll();
-
 	}
 
 	@CrossOrigin(origins = "http://localhost:3000")
