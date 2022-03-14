@@ -3,8 +3,12 @@ package com.example.demo.controller;
 import java.lang.StackWalker.Option;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+
+import javax.xml.stream.events.Comment;
 
 import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,14 +22,17 @@ import org.springframework.web.bind.annotation.*;
 
 // import com.example.demo.dto.TaskRequest;
 import com.example.demo.dto.TaskResponse;
+import com.example.demo.entity.Comments;
 import com.example.demo.entity.Follow;
 import com.example.demo.entity.Task;
 // import com.example.demo.entity.TaskType;
 import com.example.demo.entity.UserLike;
+import com.example.demo.repository.CommentsRepo;
 import com.example.demo.repository.FollowRepository;
 import com.example.demo.repository.TaskRepository;
 // import com.example.demo.repository.TaskTypeRepository;
 import com.example.demo.repository.UserLikeRepository;
+import com.example.demo.repository.UserRepository;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -39,6 +46,10 @@ public class TaskController {
 	private UserLikeRepository userLikeRepository;
 	@Autowired
 	private FollowRepository followRepository;
+	@Autowired
+	private UserRepository userRepository;
+	@Autowired
+	private CommentsRepo commentsRepo;
 
 	@PostMapping("/addTask")
 	public Task saveTaskType(@RequestBody Task taskRequest) {
@@ -71,10 +82,37 @@ public class TaskController {
 		return taskRepository.findAll();
 	}
 
-	@GetMapping("/getLikeCount/{taskId}")
-	public int getLikeCound(@PathVariable("taskId") String taskId) {
+	@GetMapping("/getLikeCount/{taskId}/{userEmail}")
+	public ResponseEntity<Map<String, Object>> getLikeCount(@PathVariable("taskId") String taskId, @PathVariable("userEmail") String email) {
 		Task task =taskRepository.getById(taskId);
-		return task.getLikeCount();
+		List<UserLike> userlike = userLikeRepository.findByTask(task);
+		List<Comments> comments = commentsRepo.findAllByTaskId(taskId);
+		List<Follow> followers = followRepository.findByTaskId(taskId);
+		String user_Email = userlike.size()>0 ? userlike.get(0).getUserEmail() : "";
+		String userName = userlike.size()>0 ?userRepository.findByEmail(user_Email).getUsername() : "";
+
+		//to check if user has already liked a post
+		List<UserLike> tempUserLike = (List<UserLike>)userLikeRepository.findAll();
+
+		Boolean hasLiked = false;
+		for(UserLike x: tempUserLike) {
+			if(x.getUserEmail().equals(email) 
+			&& x.getTask().getTaskId().equals(taskId)) {
+				hasLiked=true;
+			}
+		}
+		
+		Map<String, Object> response = new LinkedHashMap<String, Object>();
+		if(hasLiked)
+			response.put("hasLiked", true);
+		else 
+			response.put("hasLiked", false);
+
+		response.put("likes", task.getLikeCount());
+		response.put("firstName", userName);
+		response.put("numOfComments", comments.size());
+		response.put("numOfFollowers", followers.size());
+		return ResponseEntity.ok(response);
 	}
 
 	@PostMapping("/likePost")
@@ -96,18 +134,23 @@ public class TaskController {
 		for(UserLike x: tempUserLike) {
 			if(x.getUserEmail().equals(likeRequest.getUserEmail()) 
 			&& x.getTask().getTaskId().equals(likeRequest.getTask().getTaskId())) {
-				return null;
+				userLikeRepository.delete(x);
+				Task tt = tempTask.get();
+				if(tt.getLikeCount()>0) {
+					tt.updateTaskUnlikeCount();
+					taskRepository.save(tt);
+				}
+				return ResponseEntity.ok(null);
 			}
 		}
-
-		UserLike userLike = userLikeRepository.save(likeRequest);
-
-		Task tt = tempTask.get();
 		
+		
+		UserLike userLike = userLikeRepository.save(likeRequest);
+		
+		
+		Task tt = tempTask.get();
 		tt.updateTaskLikeCount();
-
 		taskRepository.save(tt);
-
 
 		return ResponseEntity.ok(userLike);
 		// return userLikeRepository.save(likeRequest);

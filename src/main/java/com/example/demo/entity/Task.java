@@ -97,5 +97,9 @@ public class Task {
 	public void updateTaskLikeCount() {
 		this.likeCount++;
 	}
+
+	public void updateTaskUnlikeCount() {
+		this.likeCount--;
+	}
 	
 }
