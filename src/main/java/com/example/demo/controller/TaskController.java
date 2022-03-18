@@ -12,11 +12,13 @@ import javax.xml.stream.events.Comment;
 
 import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,12 +29,15 @@ import com.example.demo.entity.Follow;
 import com.example.demo.entity.Task;
 // import com.example.demo.entity.TaskType;
 import com.example.demo.entity.UserLike;
+import com.example.demo.entity.UserProfile;
 import com.example.demo.repository.CommentsRepo;
 import com.example.demo.repository.FollowRepository;
 import com.example.demo.repository.TaskRepository;
 // import com.example.demo.repository.TaskTypeRepository;
 import com.example.demo.repository.UserLikeRepository;
+import com.example.demo.repository.UserProfileRepository;
 import com.example.demo.repository.UserRepository;
+import com.example.demo.service.ProfileService;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -50,6 +55,8 @@ public class TaskController {
 	private UserRepository userRepository;
 	@Autowired
 	private CommentsRepo commentsRepo;
+	@Autowired
+	private ProfileService profileService;
 
 	@PostMapping("/addTask")
 	public Task saveTaskType(@RequestBody Task taskRequest) {
@@ -93,12 +100,20 @@ public class TaskController {
 
 		//to check if user has already liked a post
 		List<UserLike> tempUserLike = (List<UserLike>)userLikeRepository.findAll();
+		List<Follow> tempUserFollow = (List<Follow>)followRepository.findAll();
 
 		Boolean hasLiked = false;
+		Boolean hasFollowed = false;
 		for(UserLike x: tempUserLike) {
 			if(x.getUserEmail().equals(email) 
 			&& x.getTask().getTaskId().equals(taskId)) {
 				hasLiked=true;
+			}
+		}
+		for(Follow x: tempUserFollow) {
+			if(x.getUserEmail().equals(email) 
+			&& x.getTaskId().equals(taskId)) {
+				hasFollowed=true;
 			}
 		}
 		
@@ -107,12 +122,22 @@ public class TaskController {
 			response.put("hasLiked", true);
 		else 
 			response.put("hasLiked", false);
+		if(hasFollowed)
+			response.put("hasFollowed", true);
+		else 
+			response.put("hasFollowed", false);
 
 		response.put("likes", task.getLikeCount());
 		response.put("firstName", userName);
 		response.put("numOfComments", comments.size());
 		response.put("numOfFollowers", followers.size());
 		return ResponseEntity.ok(response);
+	}
+
+	@PostMapping(value="/postProfilePic/{userEmail}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE) 
+	public ResponseEntity<UserProfile> saveProduct(@RequestParam("file") MultipartFile file,
+	@PathVariable("userEmail") String userEmail) {
+		return ResponseEntity.ok(profileService.saveProfileToDB(file, userEmail));
 	}
 
 	@PostMapping("/likePost")

@@ -26,6 +26,7 @@ public class FollowController {
 
         for(Follow e: temp) {
             if(e.getTaskId().equals(followRequest.getTaskId())&& e.getUserEmail().equals(followRequest.getUserEmail())) {
+                followRepository.delete(e);
                 return null;
             }
         }
