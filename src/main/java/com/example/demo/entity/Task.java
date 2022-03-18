@@ -16,10 +16,18 @@ public class Task {
 	
 	@Id
 	private String taskId;
+	private String taskType;
 	private String taskAssignedBy;
 	private String taskTitle;
 	private String taskDescription;
 	private int likeCount;
+
+	public String getTaskType() {
+		return taskType;
+	}
+	public void setTaskType(String taskType) {
+		this.taskType = taskType;
+	}
 
 	@OneToMany(mappedBy = "task", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
 	@JsonIgnoreProperties("task")
@@ -84,6 +92,16 @@ public class Task {
 		this.likeCount = likeCount;
 	}
 
+	public Task(String taskId, String taskType, String taskAssignedBy, String taskTitle, String taskDescription,
+			int likeCount, List<UserLike> userLike) {
+		this.taskId = taskId;
+		this.taskType = taskType;
+		this.taskAssignedBy = taskAssignedBy;
+		this.taskTitle = taskTitle;
+		this.taskDescription = taskDescription;
+		this.likeCount = likeCount;
+		this.userLike = userLike;
+	}
 	public void add (UserLike tempUserLike) {
 		if(userLike==null) {
 			userLike = new ArrayList<>();
