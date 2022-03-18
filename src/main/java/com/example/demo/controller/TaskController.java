@@ -135,9 +135,14 @@ public class TaskController {
 	}
 
 	@PostMapping(value="/postProfilePic/{userEmail}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE) 
-	public ResponseEntity<UserProfile> saveProduct(@RequestParam("file") MultipartFile file,
+	public ResponseEntity<UserProfile> saveProfile(@RequestParam("file") MultipartFile file,
 	@PathVariable("userEmail") String userEmail) {
 		return ResponseEntity.ok(profileService.saveProfileToDB(file, userEmail));
+	}
+
+	@GetMapping("/getProfilePic/{userEmail}") 
+	public ResponseEntity<String> getProfile(@PathVariable("userEmail") String userEmail) {
+		return ResponseEntity.ok(profileService.getProfileFromDB(userEmail).getImage());
 	}
 
 	@PostMapping("/likePost")

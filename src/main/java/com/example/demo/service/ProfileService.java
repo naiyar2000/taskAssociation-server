@@ -16,21 +16,42 @@ public class ProfileService {
     @Autowired
     private UserProfileRepository userProfileRepository;
 
+	public UserProfile getProfileFromDB(String userEmail) {
+		return userProfileRepository.findByUserEmail(userEmail);
+	}
+
     public UserProfile saveProfileToDB(MultipartFile file,String userEmail)
 	{
-		UserProfile p = new UserProfile();
-		String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-		if(fileName.contains(".."))
-		{
-			System.out.println("not a a valid file");
+		UserProfile temp = userProfileRepository.findByUserEmail(userEmail);
+		if(temp==null) {
+
+			UserProfile p = new UserProfile();
+			String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+			if(fileName.contains(".."))
+			{
+				System.out.println("not a a valid file");
+			}
+			try {
+				p.setImage(Base64.getEncoder().encodeToString(file.getBytes()));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			p.setUserEmail(userEmail);
+			return userProfileRepository.save(p);
+		} else {
+			UserProfile p = userProfileRepository.findByUserEmail(userEmail);
+			String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+			if(fileName.contains(".."))
+			{
+				System.out.println("not a a valid file");
+			}
+			try {
+				p.setImage(Base64.getEncoder().encodeToString(file.getBytes()));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			return userProfileRepository.save(p);
 		}
-		try {
-			p.setImage(Base64.getEncoder().encodeToString(file.getBytes()));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		p.setUserEmail(userEmail);
-		        
-        return userProfileRepository.save(p);
+		      
 	}
 }
